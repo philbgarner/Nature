@@ -23,6 +23,11 @@ function love.load()
   
   scenes:create("overworld", {
       fnInit = function () end
+        -- Rough, but basically how a spritesheet is worked with & animation sprite is added.
+        --local image = img
+        --local grid = anim8.newGrid(frameW, frameH, image:getWidth(), image:getHeight())
+        --local anim = anim8.newAnimation(grid(gridX, gridY), delay, onLoop)
+      end
       ,fnUpdate = function (dt) end
       ,fnDraw = function () end
       ,fnKeyPress = function (key, scancode) end

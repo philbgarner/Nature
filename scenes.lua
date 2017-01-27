@@ -2,7 +2,7 @@ local scenes = {
     list = {}
   }
   
-function scenes:create(name, sceneMethods)
+function scenes:create(name, sceneMethods, data)
   -- sceneMethods should have some methods
   -- defined. If they aren't we supply defaults.
   -- This can be extended as needed.
@@ -25,6 +25,7 @@ function scenes:create(name, sceneMethods)
   
   local scene = {
       name = name
+      ,data = data       -- data will store variables that should be available to your scene.
       ,paused = false
       ,fnInit = sceneMethods.fnInit
       ,fnUpdate = sceneMethods.fnUpdate
