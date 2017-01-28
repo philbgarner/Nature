@@ -8,7 +8,7 @@ function scenes:create(name, sceneMethods, data)
   -- This can be extended as needed.
   
   if sceneMethods.fnInit == nil then
-    sceneMethods.fnInit = function () end
+    sceneMethods.fnInit = function (data) end
   end
   if sceneMethods.fnUpdate == nil then
     sceneMethods.fnUpdate = function (dt) end
@@ -36,11 +36,11 @@ function scenes:create(name, sceneMethods, data)
     
     table.insert(scenes.list, scene)
     
-    scene.fnInit()
+    scene.fnInit(data)
 end
 
 function scenes:keyPressed(key, scancode)
-  scenes.list[#scenes.list].fnKeyPress(key, scancode)
+  scenes.list[#scenes.list].fnKeyPress(key, scancode, scenes.list[#scenes.list].data)
 end
 
 function scenes:pop()
@@ -48,11 +48,11 @@ function scenes:pop()
 end
 
 function scenes:update(dt)
-  scenes.list[#scenes.list].fnUpdate(dt)
+  scenes.list[#scenes.list].fnUpdate(dt, scenes.list[#scenes.list].data)
 end
 
 function scenes:draw()
-  scenes.list[#scenes.list].fnDraw()
+  scenes.list[#scenes.list].fnDraw(scenes.list[#scenes.list].data)
 end
 
 return scenes

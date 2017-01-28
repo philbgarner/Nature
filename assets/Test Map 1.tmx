@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="200" height="100" tilewidth="64" tileheight="64" backgroundcolor="#587180">
+ <objectgroup name="Solids" width="200" height="100">
+  <object x="7136" y="5712"/>
+  <object x="1588" y="5712"/>
+  <object x="1076" y="5792" height="16"/>
+  <object x="204" y="5628"/>
+  <object type="ground" x="0" y="6048" width="12784" height="336"/>
+  <object x="144" y="1360" width="16"/>
+  <object type="ground" x="32" y="560" width="2688" height="192"/>
+ </objectgroup>
+ <objectgroup name="Entities" width="200" height="100">
+  <object name="Player1" type="player" x="2416" y="320" width="144" height="160">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>
