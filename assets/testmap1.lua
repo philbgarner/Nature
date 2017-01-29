@@ -106,10 +106,10 @@ return {
           name = "Player1",
           type = "player",
           shape = "ellipse",
-          x = 2416,
-          y = 320,
-          width = 144,
-          height = 160,
+          x = 307,
+          y = 75,
+          width = 27,
+          height = 27,
           visible = true,
           properties = {}
         }

@@ -10,7 +10,7 @@
   <object type="ground" x="32" y="560" width="2688" height="192"/>
  </objectgroup>
  <objectgroup name="Entities" width="200" height="100">
-  <object name="Player1" type="player" x="2416" y="320" width="144" height="160">
+  <object name="Player1" type="player" x="307" y="75" width="27" height="27">
    <ellipse/>
   </object>
  </objectgroup>
