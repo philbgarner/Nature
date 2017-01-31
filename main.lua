@@ -6,15 +6,45 @@ settings = {
 -- Physics Globals
 world = nil
 
-
 -- Data Model Only!
 gamedata = {
     level = {}
+    ,player = {}
   }
 
 -- Modules
 anim8 = require "anim8"
 scenes = require "scenes"
+resources = require "resources"
+gamera = require "gamera"
+
+-- Used for shader effects.
+canvas = nil
+dirt_shader = nil
+
+-- Camera
+camera = gamera.new(0,0,10,10)
+
+-- Shader Collection
+shaders = {
+    applyTexture = [[
+      uniform Image tex;
+      vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+      {      
+        vec4 px = Texel(texture, texture_coords);
+        vec4 im = Texel(tex, texture_coords);
+        
+        if (px.r > 0)
+        {
+          px.r = im.r;
+          px.g = im.g;
+          px.b = im.b;
+        }
+        
+        return px;
+      }
+    ]]
+  }
 
 function createStatic(x, y, width, height)
 
@@ -40,6 +70,37 @@ function createStatic(x, y, width, height)
 
 end
 
+function createPolyStatic(polygon)
+
+  local static = {
+      body = nil
+      ,shape = nil
+      ,fixture = nil
+      ,density = 100
+      ,x = x
+      ,y = y
+      ,w = width
+      ,h = height
+      ,polygon = polygon
+    }
+
+  local polys = {}
+  
+  for i=1, #polygon do
+    table.insert(polys, static.polygon[i].x)
+    table.insert(polys, static.polygon[i].y)
+  end
+
+  static.body = love.physics.newBody(world, x, y, "static")
+  static.shape = love.physics.newPolygonShape(polys)
+  static.fixture = love.physics.newFixture(static.body, static.shape, static.density)
+  static.fixture:setRestitution(0.1)
+  static.fixture:setUserData("static object")
+  static.fixture:setFilterData(0x001, 0x002, 0)
+
+  return static
+
+end
 
 function createEntity(x, y, width, height)
 
@@ -71,11 +132,16 @@ end
 function love.load()
   
   love.window.setMode(settings.resolution.w, settings.resolution.h, {resizable=false})
+  canvas = love.graphics.newCanvas(settings.resolution.w, settings.resolution.h)
+  dirt_shader = love.graphics.newShader(shaders.applyTexture)
+  dirt_shader:send("tex", resources.dirt)
   
   love.physics.setMeter(10)
   world = love.physics.newWorld(0, 9.81 * 10, true)
   
   gamedata.level = require "assets/testmap1"
+  
+  camera:setWorld(0, 0, gamedata.level.width * gamedata.level.tilewidth, gamedata.level.height * gamedata.level.tileheight)
   
   font = love.graphics.newFont(12)
   fontheader1 = love.graphics.newFont(24)
@@ -92,6 +158,7 @@ function love.load()
               local o = gamedata.level.layers[i].objects[j]
               if o.type == "ground" then
                 local st = createStatic(o.x, o.y, o.width, o.height)
+                st.shader = o.properties.shader
                 table.insert(data.statics, st)
               end
             end
@@ -102,10 +169,13 @@ function love.load()
               local o = gamedata.level.layers[i].objects[j]
               if o.type == "entity" then
                 local ent = createEntity(o.x, o.y, o.width, o.height)
+                ent.image = o.properties.image
                 table.insert(data.entities, ent)
               elseif o.type == "player" then
                 local pl = createEntity(o.x, o.y, o.width, o.height)
+                pl.image = o.properties.image
                 data.player = pl
+                gamedata.player = pl
               end
             end
           end
@@ -114,41 +184,54 @@ function love.load()
   
       end
       ,fnUpdate = function (dt, data)
-
+        print(data.player.body:getX(), data.player.body:getY())
       end
       ,fnDraw = function (data)
-        love.graphics.setColor(100, 100, 100, 255)
-        love.graphics.rectangle("fill", 0, 0, settings.resolution.w, settings.resolution.h)
-        love.graphics.push()
-        love.graphics.translate(data.offsetx, data.offsety)
-        
-        for i=1, #data.statics do
-          local ds = data.statics[i]
-          love.graphics.setColor(0, 255, 0, 255)
+
+        camera:setPosition(-data.offsetx, -data.offsety)
+
+        camera:draw(function(l,t,w,h)
+      
+          love.graphics.setCanvas(canvas)
+            love.graphics.setColor(0, 0, 0, 255)
+            love.graphics.rectangle("fill", 0, 0, settings.resolution.w, settings.resolution.h)
+          love.graphics.setCanvas()
+          
+          love.graphics.setColor(255, 255, 255, 255)
+            for i=1, #data.statics do
+              local ds = data.statics[i]
+              love.graphics.push()
+                love.graphics.translate(ds.body:getX(), ds.body:getY())
+                print(ds.body:getX(), ds.body:getY())
+                love.graphics.setCanvas(canvas)        
+                  love.graphics.polygon("fill", ds.shape:getPoints())
+                love.graphics.setCanvas()
+                  love.graphics.polygon("line", ds.shape:getPoints())
+              love.graphics.pop()
+            end
+                    
+          for i=1, #data.entities do
+            local ds = data.entities[i]
+            love.graphics.setColor(255, 255, 0, 255)
+            love.graphics.push()
+              love.graphics.translate(ds.body:getX(), ds.body:getY())
+              love.graphics.polygon("line", ds.shape:getPoints())
+            love.graphics.pop()
+          end
+                    
+          local pl = data.player
+          
           love.graphics.push()
-            love.graphics.translate(ds.body:getX(), ds.body:getY())
-            love.graphics.polygon("fill", ds.shape:getPoints())
+            love.graphics.translate(pl.body:getX(), pl.body:getY())
+            love.graphics.setColor(0, 0, 255, 255)
+            love.graphics.polygon("line", pl.shape:getPoints())
           love.graphics.pop()
-        end
+          
+          love.graphics.setShader(dirt_shader)
+            love.graphics.draw(canvas, 0, 0)
+          love.graphics.setShader()
         
-        for i=1, #data.entities do
-          local ds = data.entities[i]
-          love.graphics.setColor(255, 255, 0, 255)
-          love.graphics.push()
-            love.graphics.translate(ds.body:getX(), ds.body:getY())
-            love.graphics.polygon("line", ds.shape:getPoints())
-          love.graphics.pop()
-        end
-        
-        local pl = data.player
-        
-        love.graphics.push()
-          love.graphics.translate(pl.body:getX(), pl.body:getY())
-          love.graphics.setColor(0, 0, 255, 255)
-          love.graphics.polygon("line", pl.shape:getPoints())
-        love.graphics.pop()
-        
-        love.graphics.pop()
+        end) 
 
       end
       ,fnKeyPress = function (key, scancode) end
@@ -167,6 +250,10 @@ end
 -- ******************************
 function love.draw()
 
+  local d = scenes:getData()
+  d.offsetx = d.player.body:getX()
+  d.offsety = d.player.body:getY()
+  scenes:setData(d)
   scenes:draw()
   
 end

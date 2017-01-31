@@ -51,6 +51,15 @@ function scenes:update(dt)
   scenes.list[#scenes.list].fnUpdate(dt, scenes.list[#scenes.list].data)
 end
 
+
+function scenes:getData()
+  return scenes.list[#scenes.list].data
+end
+
+function scenes:setData(d)
+  scenes.list[#scenes.list].data = d
+end
+
 function scenes:draw()
   scenes.list[#scenes.list].fnDraw(scenes.list[#scenes.list].data)
 end

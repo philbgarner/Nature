@@ -17,81 +17,17 @@ return {
       properties = {},
       objects = {
         {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 7136,
-          y = 5712,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 1588,
-          y = 5712,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 1076,
-          y = 5792,
-          width = 0,
-          height = 16,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 204,
-          y = 5628,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
+          name = "Ground",
           type = "ground",
           shape = "rectangle",
-          x = 0,
-          y = 6048,
-          width = 12784,
-          height = 336,
+          x = 40,
+          y = 5552,
+          width = 12672,
+          height = 784,
           visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 144,
-          y = 1360,
-          width = 16,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "ground",
-          shape = "rectangle",
-          x = 32,
-          y = 560,
-          width = 2688,
-          height = 192,
-          visible = true,
-          properties = {}
+          properties = {
+            ["shader"] = "dirt"
+          }
         }
       }
     },
@@ -106,8 +42,8 @@ return {
           name = "Player1",
           type = "player",
           shape = "ellipse",
-          x = 307,
-          y = 75,
+          x = 1578,
+          y = 4269,
           width = 27,
           height = 27,
           visible = true,
