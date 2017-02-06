@@ -1,268 +1,69 @@
--- Global Variables
-settings = {
-    resolution = { w = 1024, h = 768 }
-  }
-
--- Physics Globals
-world = nil
-
--- Data Model Only!
-gamedata = {
-    level = {}
-    ,player = {}
-  }
-
 -- Modules
+require "table_io"
 anim8 = require "anim8"
 scenes = require "scenes"
 resources = require "resources"
-gamera = require "gamera"
 
--- Used for shader effects.
-canvas = nil
-dirt_shader = nil
+suit = require 'suit'
 
--- Camera
-camera = gamera.new(0,0,10,10)
+-- Globals
 
--- Shader Collection
-shaders = {
-    applyTexture = [[
-      uniform Image tex;
-      vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
-      {      
-        vec4 px = Texel(texture, texture_coords);
-        vec4 im = Texel(tex, texture_coords);
-        
-        if (px.r > 0)
-        {
-          px.r = im.r;
-          px.g = im.g;
-          px.b = im.b;
-        }
-        
-        return px;
-      }
-    ]]
-  }
+engine = require "NatureEngine"
+paused = true      -- When not paused, show UI.
 
-function createStatic(x, y, width, height)
-
-  local static = {
-      body = nil
-      ,shape = nil
-      ,fixture = nil
-      ,density = 100
-      ,x = x
-      ,y = y
-      ,w = width
-      ,h = height
-    }
-
-  static.body = love.physics.newBody(world, x, y, "static")
-  static.shape = love.physics.newRectangleShape(0, 0, width, height)
-  static.fixture = love.physics.newFixture(static.body, static.shape, static.density)
-  static.fixture:setRestitution(0.1)
-  static.fixture:setUserData("static object")
-  static.fixture:setFilterData(0x001, 0x002, 0)
-
-  return static
-
-end
-
-function createPolyStatic(polygon)
-
-  local static = {
-      body = nil
-      ,shape = nil
-      ,fixture = nil
-      ,density = 100
-      ,x = x
-      ,y = y
-      ,w = width
-      ,h = height
-      ,polygon = polygon
-    }
-
-  local polys = {}
-  
-  for i=1, #polygon do
-    table.insert(polys, static.polygon[i].x)
-    table.insert(polys, static.polygon[i].y)
-  end
-
-  static.body = love.physics.newBody(world, x, y, "static")
-  static.shape = love.physics.newPolygonShape(polys)
-  static.fixture = love.physics.newFixture(static.body, static.shape, static.density)
-  static.fixture:setRestitution(0.1)
-  static.fixture:setUserData("static object")
-  static.fixture:setFilterData(0x001, 0x002, 0)
-
-  return static
-
-end
-
-function createEntity(x, y, width, height)
-
-  local entity = {
-      body = nil
-      ,shape = nil
-      ,fixture = nil
-      ,density = 1
-      ,x = x
-      ,y = y
-      ,w = width
-      ,h = height
-    }
-
-  entity.body = love.physics.newBody(world, x, y, "dynamic")
-  entity.shape = love.physics.newRectangleShape(0, 0, width, height)
-  entity.fixture = love.physics.newFixture(entity.body, entity.shape, entity.density)
-  entity.fixture:setRestitution(0.1)
-  entity.fixture:setUserData("entity object")
-  entity.fixture:setFilterData(0x002, 0x0001 or 0x002, 0)
-
-  return entity
-
-end
+-- UI methods need access to the engine object.
+ui = require "ui"
 
 -- ******************************
 --  LOAD
 -- ******************************
 function love.load()
   
-  love.window.setMode(settings.resolution.w, settings.resolution.h, {resizable=false})
-  canvas = love.graphics.newCanvas(settings.resolution.w, settings.resolution.h)
-  dirt_shader = love.graphics.newShader(shaders.applyTexture)
-  dirt_shader:send("tex", resources.dirt)
-  
-  love.physics.setMeter(10)
-  world = love.physics.newWorld(0, 9.81 * 10, true)
-  
-  gamedata.level = require "assets/testmap1"
-  
-  camera:setWorld(0, 0, gamedata.level.width * gamedata.level.tilewidth, gamedata.level.height * gamedata.level.tileheight)
-  
   font = love.graphics.newFont(12)
   fontheader1 = love.graphics.newFont(24)
   love.graphics.setFont(font)
-  
-  scenes:create("sidescroll", {
-      fnInit = function (data)
+  print("getIdentity:", love.filesystem.getIdentity( ))
+  engine:create("mockup1", {0, 0, 5000, 2000})  -- mockup1 is the asset pack (folder maps to /NatureEngine/prefabs/mockup1"
+                                                -- second param is the world boundaries for the camera.
 
-        -- load level data.
-        for i=1, #gamedata.level.layers do
-          
-          if gamedata.level.layers[i].type == "objectgroup" and gamedata.level.layers[i].name == "Solids" then
-            for j=1, #gamedata.level.layers[i].objects do      
-              local o = gamedata.level.layers[i].objects[j]
-              if o.type == "ground" then
-                local st = createStatic(o.x, o.y, o.width, o.height)
-                st.shader = o.properties.shader
-                table.insert(data.statics, st)
-              end
-            end
-          end
-        
-          if gamedata.level.layers[i].type == "objectgroup" and gamedata.level.layers[i].name == "Entities" then
-            for j=1, #gamedata.level.layers[i].objects do      
-              local o = gamedata.level.layers[i].objects[j]
-              if o.type == "entity" then
-                local ent = createEntity(o.x, o.y, o.width, o.height)
-                ent.image = o.properties.image
-                table.insert(data.entities, ent)
-              elseif o.type == "player" then
-                local pl = createEntity(o.x, o.y, o.width, o.height)
-                pl.image = o.properties.image
-                data.player = pl
-                gamedata.player = pl
-              end
-            end
-          end
 
-        end
-  
-      end
-      ,fnUpdate = function (dt, data)
-        print(data.player.body:getX(), data.player.body:getY())
-      end
-      ,fnDraw = function (data)
-
-        camera:setPosition(-data.offsetx, -data.offsety)
-
-        camera:draw(function(l,t,w,h)
-      
-          love.graphics.setCanvas(canvas)
-            love.graphics.setColor(0, 0, 0, 255)
-            love.graphics.rectangle("fill", 0, 0, settings.resolution.w, settings.resolution.h)
-          love.graphics.setCanvas()
-          
-          love.graphics.setColor(255, 255, 255, 255)
-            for i=1, #data.statics do
-              local ds = data.statics[i]
-              love.graphics.push()
-                love.graphics.translate(ds.body:getX(), ds.body:getY())
-                print(ds.body:getX(), ds.body:getY())
-                love.graphics.setCanvas(canvas)        
-                  love.graphics.polygon("fill", ds.shape:getPoints())
-                love.graphics.setCanvas()
-                  love.graphics.polygon("line", ds.shape:getPoints())
-              love.graphics.pop()
-            end
-                    
-          for i=1, #data.entities do
-            local ds = data.entities[i]
-            love.graphics.setColor(255, 255, 0, 255)
-            love.graphics.push()
-              love.graphics.translate(ds.body:getX(), ds.body:getY())
-              love.graphics.polygon("line", ds.shape:getPoints())
-            love.graphics.pop()
-          end
-                    
-          local pl = data.player
-          
-          love.graphics.push()
-            love.graphics.translate(pl.body:getX(), pl.body:getY())
-            love.graphics.setColor(0, 0, 255, 255)
-            love.graphics.polygon("line", pl.shape:getPoints())
-          love.graphics.pop()
-          
-          love.graphics.setShader(dirt_shader)
-            love.graphics.draw(canvas, 0, 0)
-          love.graphics.setShader()
-        
-        end) 
-
-      end
-      ,fnKeyPress = function (key, scancode) end
-    }, {
-      offsetx = 0
-      ,offsety = 0
-      ,scale = 1
-      ,statics = {}
-      ,entities = {}
-      ,player = {}
-    })
 end
 
 -- ******************************
 --  DRAW
 -- ******************************
 function love.draw()
+  engine:draw()
 
-  local d = scenes:getData()
-  d.offsetx = d.player.body:getX()
-  d.offsety = d.player.body:getY()
-  scenes:setData(d)
-  scenes:draw()
-  
+  suit:draw()
 end
 
 -- ******************************
 --  UPDATE
 -- ******************************
 function love.update(dt)
-  world:update(dt)   
-  scenes:update(dt)
    
+   -- UI Layout
+  if paused then
+    ui:drawPrefabs(engine.assetlist)
+    ui:drawObjects(engine.layers)
+    ui:drawSelected(engine.camera_target)
+  else
+    engine:update(dt)
+  end
+
+end
+
+function love.textinput(t)
+    -- forward text input to SUIT
+    suit.textinput(t)
+end
+
+function love.keypressed(key, scancode)
+    -- forward keypressed to SUIT
+    suit.keypressed(key)
+    
+    if scancode == "escape" then
+      paused = not paused
+    end
 end
