@@ -50,12 +50,13 @@ function NatureEngine:loadAssets()
     return
   end
   
-  if not love.filesystem.exists("prefabs/" .. NatureEngine.assetpack .. "/assets.list") then
+  if not love.filesystem.exists("prefabs/" .. NatureEngine.assetpack .. "/assets.list.lua") then
     print("Prefab Assets File not found: Expected '", "prefabs/" .. NatureEngine.assetpack .. "/assets.list" .. "'")
     return
   end
   
-  NatureEngine.assetlist = table.load("prefabs/" .. NatureEngine.assetpack .. "/assets.list")
+  --NatureEngine.assetlist = table.load("prefabs/" .. NatureEngine.assetpack .. "/assets.list")
+  NatureEngine.assetlist = loadAssetList("prefabs/" .. NatureEngine.assetpack .. "/assets.list.lua")
   local ac = 0
   for key, value in pairs(NatureEngine.assetlist) do
     NatureEngine.assetlist[key].image = love.graphics.newImage("prefabs/" .. NatureEngine.assetpack .. "/" .. key)

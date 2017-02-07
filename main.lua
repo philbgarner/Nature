@@ -1,5 +1,4 @@
 -- Modules
-require "table_io"
 anim8 = require "anim8"
 scenes = require "scenes"
 resources = require "resources"
@@ -9,6 +8,7 @@ suit = require 'suit'
 -- Globals
 
 engine = require "NatureEngine"
+require "prefabs_io"
 paused = true      -- When not paused, show UI.
 
 -- UI methods need access to the engine object.
