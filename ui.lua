@@ -15,7 +15,7 @@ local ui = {
       active   = {bg = {188,88,30}, fg = {225, 255, 0}}
     }
     ,sel_layer = 1
-    
+    ,editor_state = 1
     ,camera_target = {
         x = {text = "0"}
         ,y = {text = "0"}
@@ -105,7 +105,15 @@ function ui:drawSelected(so)
   suit.Label("Selected Object (" .. so.prefab .. ", uid: " .. so.uid .. ")", {align="left"}, suit.layout:row(400,20))
   suit.Label("Current Position (" .. so.body:getX() .. "," .. so.body:getY() .. ")", {align="left"}, suit.layout:row(400,20))
   
-  suit.Label("Translate Position (+/- x, +/- y):", {align="left"}, suit.layout:row(400,30))
+  suit.Label("Translate Position (+/- x, +/- y):", {align="left"}, suit.layout:row(350,30))
+  if suit.Button("Grab", {align="left"}, suit.layout:col(40)).hit then
+    ui.editor_state = 2
+    local cx, cy = engine.camera:toWorld(love.mouse.getX(), love.mouse.getY())
+    local ox = tonumber(engine.assetlist[engine.camera_target.prefab].asset_properties.animation_w) / 2
+    local oy = tonumber(engine.assetlist[engine.camera_target.prefab].asset_properties.animation_h) / 2
+    engine.camera_target.body:setPosition(cx - ox, cy - oy)
+    love.mouse.setGrabbed(true)
+  end
   
   if suit.Input(ui.camera_target.x, 615, 80, 195, 30).submitted then
     so.body:setPosition(so.body:getX() + tonumber(ui.camera_target.x.text), so.body:getY() + tonumber(ui.camera_target.y.text))

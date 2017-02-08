@@ -67,3 +67,21 @@ function love.keypressed(key, scancode)
       paused = not paused
     end
 end
+
+function love.mousemoved(x, y, dx, dy)
+  
+  if ui.editor_state == 2 and engine.camera_target ~= nil then
+    engine.camera_target.body:setPosition(engine.camera_target.body:getX() + dx, engine.camera_target.body:getY() + dy)
+    local wx, wy, wd = love.window.getPosition()
+    local mw, mh, mf = love.window.getMode()
+  end
+  
+end
+
+function love.mousepressed(x, y, button, istouch)
+  
+  if ui.editor_state == 2 then
+    love.mouse.setGrabbed(false)
+    ui.editor_state = 1 
+  end
+end
