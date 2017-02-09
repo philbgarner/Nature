@@ -126,11 +126,18 @@ function ui:drawSelected(so)
 
   suit.layout:reset(610,115,5,5)
   
-  suit.Label("Angle:", {align="left"}, suit.layout:row(200,30))
-  suit.Label("name:", {align="left"}, suit.layout:col(200))
+  suit.Label("Angle:", {align="left"}, suit.layout:row(50,30))
   
-  suit.Input(ui.camera_target.angle, 660, 115, 150, 30)
-  suit.Input(ui.camera_target.name, 860, 115, 150, 30)
+  suit.layout:reset(810,115,5,5)
+  suit.Label("Name:", {align="left"}, suit.layout:row(50, 30))
+  
+  suit.layout:reset(610,145,5,5)
+  
+  if suit.Input(ui.camera_target.angle, 660, 115, 150, 30).submitted then
+    so.body:setAngle(tonumber(math.rad(ui.camera_target.angle.text)))
+  end
+  if suit.Input(ui.camera_target.name, 860, 115, 150, 30).submitted then
+  end
   
   suit.layout:reset(610,150,5,5)
   

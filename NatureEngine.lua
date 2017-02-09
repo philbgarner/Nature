@@ -94,12 +94,10 @@ function NatureEngine:draw()
       for a=1, #NatureEngine.layers[l].solids do
         local sl = NatureEngine.layers[l].solids[a]
         local as = NatureEngine.assetlist[sl.prefab]
-        love.graphics.draw(as.image, sl.body:getX(), sl.body:getY())
-        love.graphics.push()
-          love.graphics.translate(sl.body:getX(), sl.body:getY())
-          love.graphics.line(sl.shape:getPoints( ))
-        love.graphics.pop()
-        
+        local aw = as.asset_properties.animation_w / 2
+        local ah = as.asset_properties.animation_h / 2
+        love.graphics.draw(as.image, sl.body:getX(), sl.body:getY(), sl.body:getAngle())
+        love.graphics.line(sl.body:getWorldPoints(sl.shape:getPoints()))
       end
       
       -- Render Entities
