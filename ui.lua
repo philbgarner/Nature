@@ -28,19 +28,21 @@ function ui:drawPrefabs(assetlist)
   
   suit.layout:reset(0,0,5,5)
   state = suit.Label("-= Prefab Asset List =-", suit.layout:row(200,20))
+  local cx, cy = engine.camera:getPosition()
 
   local c = 1
   for key, value in pairs(assetlist) do
     if suit.Button("#" .. c .. " " .. key, {color = ui.clr_normal, align="left"}, suit.layout:row(200, 20)).hit then
       if value.physical_properties.bodytype == 1 then
-        local x1,y1,x2,y2,x3,y3,x4,y4 = engine.camera:getVisibleCorners()
-        local cx = (x2 - x1) / 2
-        local cy = (y2 - y1) / 2
+--        local x1,y1,x2,y2,x3,y3,x4,y4 = engine.camera:getVisibleCorners()
+--        print(">>>", x1,y1,x2,y2,x3,y3,x4,y4)
+--        local cx = (x2 - x1) / 2
+--        local cy = (y4 - y1) / 2
         engine:createSolid(ui.sel_layer, key, cx, cy)
       elseif value.physical_properties.bodytype == 2 then
-        local x1,y1,x2,y2,x3,y3,x4,y4 = engine.camera:getVisibleCorners()
-        local cx = (x2 - x1) / 2
-        local cy = (y2 - y1) / 2
+--        local x1,y1,x2,y2,x3,y3,x4,y4 = engine.camera:getVisibleCorners()
+--        local cx = (x2 - x1) / 2
+--        local cy = (y4 - y1) / 2
         engine:createEntity(ui.sel_layer, key, cx, cy, value.collision_settings.radius)
       end
     end
@@ -156,6 +158,36 @@ function ui:drawSelected(so)
     engine:toBackObject(so.uid)
   end
   
+  
+end
+
+
+function ui:drawMinimap()
+  
+  suit.layout:reset(610,200,5,5)
+  
+  love.graphics.line(600, 230, 800, 230)
+  
+  suit.Label("-= Minimap =-", {color = ui.clr_normal, align="left"}, suit.layout:row(200, 30))
+  
+  local cx, cy = engine.camera:getPosition()
+  cx = cx - 512
+  cy = cy - 384
+  local wl, wt, ww, wh = engine.camera:getWorld()
+  
+  love.graphics.push()
+  love.graphics.translate(610, 230)
+  love.graphics.scale(400 / ww)
+  engine.camera_mini:draw(function (l, t, w, h) 
+    engine:renderLayers()
+    love.graphics.setColor(10, 140, 205)
+    love.graphics.rectangle("fill", 0, 1700, ww, wh - 1700)
+    
+    love.graphics.setColor(255, 255, 0)
+    love.graphics.rectangle("line", cx, cy, 1024, 768)
+    love.graphics.setColor(255, 255, 255) 
+  end)
+  love.graphics.pop()
   
 end
 

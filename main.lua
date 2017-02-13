@@ -80,6 +80,9 @@ function love.draw()
   love.graphics.setShader()
 
   suit:draw()
+  
+  ui:drawMinimap()
+  
 end
 
 -- ******************************
@@ -129,6 +132,12 @@ function love.mousemoved(x, y, dx, dy)
     engine.camera_target.body:setPosition(engine.camera_target.body:getX() + dx, engine.camera_target.body:getY() + dy)
     local wx, wy, wd = love.window.getPosition()
     local mw, mh, mf = love.window.getMode()
+  end
+  
+  if love.mouse.isDown(2) then
+    local cx, cy = engine.camera:getPosition()
+    
+    engine.camera:setPosition(cx + dx * 1.5, cy + dy * 1.5)
   end
   
 end

@@ -39,6 +39,9 @@ function NatureEngine:create(assetpack, camera_dimensions)
   NatureEngine.world = love.physics.newWorld(0, 9.81 * 10, true)
   
   NatureEngine.camera = gamera.new(camera_dimensions[1], camera_dimensions[2], camera_dimensions[3], camera_dimensions[4])
+  NatureEngine.camera_mini = gamera.new(camera_dimensions[1], camera_dimensions[2], camera_dimensions[3], camera_dimensions[4])
+  NatureEngine.camera_mini:setPosition(0, 0)
+  --NatureEngine.camera_mini:setScale(0.001) 
   
   initialized = true
 end
@@ -86,7 +89,15 @@ end
 
 function NatureEngine:draw()
   
-  NatureEngine.camera:draw(function (l,t,w,h)
+  NatureEngine.camera:draw(function (left,t,w,h)
+  
+    NatureEngine:renderLayers()
+    
+  end)
+  
+end
+
+function NatureEngine:renderLayers()
   
     for l=1, #NatureEngine.layers do
       
@@ -110,10 +121,9 @@ function NatureEngine:draw()
       end
       
     end
-    
-  end)
   
 end
+  
 
 function NatureEngine:quit()
 end
