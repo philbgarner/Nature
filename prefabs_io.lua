@@ -1,4 +1,15 @@
-function writeAssetList(path)
+function writeAssetList(apath)
+  local path = ""
+
+  if not settings.relative_paths then
+    path = settings.absolute_path
+    if string.sub(path, -1) ~= "/" then
+      path = path .. "/"
+    end
+    print("Using absolute_path setting: ", path)
+  end
+
+  
   local buffer = "return {"
   
   local kc = 0
@@ -34,7 +45,7 @@ function writeAssetList(path)
   
   buffer = buffer .. "}"
   
-  local f = io.open(path .. "/assets.list.lua", "w")
+  local f = io.open(path .. apath .. "/assets.list.lua", "w")
   
     f:write(buffer)
   
@@ -45,7 +56,17 @@ end
 function loadAssetList(file)
   print("Loading assets file: ", file)
   
-  local f = io.open(file)
+  local path = ""
+  
+  if not settings.relative_paths then
+    path = settings.absolute_path
+    if string.sub(path, -1) ~= "/" then
+      path = path .. "/"
+    end
+    print("Using absolute_path setting: ", path)
+  end
+  
+  local f = io.open(path .. file)
   
   local buffer = f:read("*all")
   

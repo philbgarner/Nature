@@ -3,6 +3,8 @@ anim8 = require "anim8"
 scenes = require "scenes"
 resources = require "resources"
 
+settings = require "settings"
+
 suit = require 'suit'
 
 -- Globals
