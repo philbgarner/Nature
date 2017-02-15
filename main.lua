@@ -1,3 +1,8 @@
+-- Toggle for window objects that aren't always on.
+
+wndLevelProps = false
+level_menu_active = false
+
 -- Modules
 anim8 = require "anim8"
 scenes = require "scenes"
@@ -15,7 +20,6 @@ paused = true      -- When not paused, show UI.
 
 -- UI methods need access to the engine object.
 ui = require "ui"
-
 
 canvas = nil
 
@@ -73,6 +77,7 @@ function love.draw()
   love.graphics.clear()
   engine:draw()
 
+    
   love.graphics.setCanvas()
 
   love.graphics.setShader(shader)
@@ -81,9 +86,16 @@ function love.draw()
   
   love.graphics.setShader()
 
+  if paused then ui:drawMinimap() end
+  
+  ui:drawMenuSystem()
+  if wndLevelProps then
+    ui:drawLevelProperties(200, 200)
+  end
+
   suit:draw()
   
-  ui:drawMinimap()
+
   
 end
 

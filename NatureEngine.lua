@@ -19,6 +19,10 @@ local NatureEngine = {
   ,camera = nil
   ,camera_target = nil
   
+  ,properties = {
+      background_image = "sunrise_back.png"
+    }
+  
   ,uid_max = 1
   
   ,initialized = false
@@ -71,6 +75,22 @@ function NatureEngine:loadAssets()
   
 end
 
+function NatureEngine:loadPrefabImage(filename)
+  if NatureEngine.assetpack == "" then return end
+  if not love.filesystem.exists("prefabs/" .. NatureEngine.assetpack) then
+    print("Could not locate " .. NatureEngine.assetpack .. ".")
+    return
+  end
+  
+  if not love.filesystem.exists("prefabs/" .. NatureEngine.assetpack .. "/" .. filename) then
+    print("Prefab Assets File not found: Expected '", "prefabs/" .. NatureEngine.assetpack .. "/" .. filename .. "'")
+    return
+  end
+  
+  return love.graphics.newImage("prefabs/" .. NatureEngine.assetpack .. "/" .. filename)
+  
+end
+
 function NatureEngine:update(dt)
   
   NatureEngine.world:update(dt)
@@ -88,6 +108,11 @@ function NatureEngine:refreshCameraTarget()
 end
 
 function NatureEngine:draw()
+  
+  -- Draw base background layer for parallax effect.
+  if engine.properties.image_background_base ~= nil then
+    love.graphics.draw(engine.properties.image_background_base, 0, 0)
+  end
   
   NatureEngine.camera:draw(function (left,t,w,h)
   

@@ -22,6 +22,16 @@ local ui = {
         ,angle = {text = "0"}
         ,name = {text = ""}
       }
+    ,level_menu = {
+        "New Level"
+        ,"Save Level"
+        ,"Load Level"
+        ,"-"
+        ,"Properties"
+        ,"-"
+        ,"Exit"
+      }
+    ,level_menu_active = false
   }
   
 function ui:drawPrefabs(assetlist)
@@ -49,6 +59,44 @@ function ui:drawPrefabs(assetlist)
     c = c + 1
   end
 
+end
+
+function ui:drawMenuSystem()
+  
+  suit.layout:reset(0, 743, 5, 5)
+  
+  if not level_menu_active then
+    if suit.Button("> Level", {color = ui.clr_normal, align="left"}, suit.layout:row(75, 30)).hit then
+      level_menu_active = true
+    end
+  else
+    if suit.Button("> Level", {color = ui.clr_selected, align="left"}, suit.layout:row(75, 30)).hit then
+      level_menu_active = false
+    end
+    suit.layout:reset(90, 533, 5, 5)
+    for key, value in pairs(ui.level_menu) do
+      if value == "-" then
+        suit.Label("-----------", suit.layout:row(75, 30))
+      else
+        if suit.Button(value, {color = ui.clr_normal, align="left"}, suit.layout:row(75, 30)).hit then
+          level_menu_active = false
+          ui:executeMenuCode(value)
+        end
+      end
+    end
+  end
+  
+end
+
+function ui:executeMenuCode(value)
+  
+  if value == "Properties" then
+    if type(engine.properties.background_image) == "string" then
+      engine.properties.background_image = {text = engine.properties.background_image}
+    end
+    wndLevelProps = true
+  end
+  
 end
 
   
@@ -161,6 +209,31 @@ function ui:drawSelected(so)
   
 end
 
+function ui:drawLevelProperties(x, y)
+  local w = 450
+  local h = 350
+  
+  love.graphics.setColor(23, 23, 73, 220)
+  love.graphics.rectangle("fill", x, y, w, h, 6, 6)
+  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.rectangle("line", x, y, w, h, 6, 6)
+  
+  suit.layout:reset(x+ 15,y,5,5)
+  
+  suit.Label("-= Level Properties =-", {align="left"}, suit.layout:row(400,20))
+  
+  suit.Label("Background Image", {align="left"}, suit.layout:row(150,20))  
+  if suit.Input(engine.properties.background_image, x + 155, y + 25, 225, 20).submitted then
+    engine.properties.image_background_base = engine:loadPrefabImage(engine.properties.background_image.text)
+  end
+  
+  suit.layout:reset(x+15,y + 300,5,5)
+  if suit.Button("Done", {color = ui.clr_normal, align="left"},suit.layout:row(400, 30)).hit
+  then
+    wndLevelProps = false
+  end
+  
+end
 
 function ui:drawMinimap()
   
