@@ -4,6 +4,14 @@ This editor uses the prefabs built in my prefabEditor package and allows the use
 
 ## Current Version Notes
 
+[Feb 16, 2017]
+In this updated I added the background layers and applied a vertical parralax effect.  Next update should apply the same effect in the x axis.
+
+There is a video clip of the current version here:
+https://youtu.be/tUDvs-MFW4g
+
+
+[Feb 14, 2017]
 In the latest update I added a water shader which will reflect all the placed prefabs in the scene (anything rendered above the water line which is configurable will be reflected + distorted).
 
 This distortion filter will also be used to implement the rising hot air columns which give the player's glider extra lift.
