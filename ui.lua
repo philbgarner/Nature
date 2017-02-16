@@ -93,6 +93,8 @@ function ui:executeMenuCode(value)
   if value == "Properties" then
     if type(engine.properties.background_image) == "string" then
       engine.properties.background_image = {text = engine.properties.background_image}
+      engine.properties.background_image2 = {text = engine.properties.background_image2}
+      engine.properties.background_image3 = {text = engine.properties.background_image3}
     end
     wndLevelProps = true
   end
@@ -226,7 +228,17 @@ function ui:drawLevelProperties(x, y)
   if suit.Input(engine.properties.background_image, x + 155, y + 25, 225, 20).submitted then
     engine.properties.image_background_base = engine:loadPrefabImage(engine.properties.background_image.text)
   end
-  
+
+  suit.Label("Background Image 2", {align="left"}, suit.layout:row(150,20))  
+  if suit.Input(engine.properties.background_image2, x + 155, y + 50, 225, 20).submitted then
+    engine.properties.image_background_middle = engine:loadPrefabImage(engine.properties.background_image2.text)
+  end
+ 
+  suit.Label("Background Image 3 (Closest)", {align="left"}, suit.layout:row(150,20))  
+  if suit.Input(engine.properties.background_image3, x + 155, y + 75, 225, 20).submitted then
+    engine.properties.image_background_near = engine:loadPrefabImage(engine.properties.background_image3.text)
+  end
+ 
   suit.layout:reset(x+15,y + 300,5,5)
   if suit.Button("Done", {color = ui.clr_normal, align="left"},suit.layout:row(400, 30)).hit
   then

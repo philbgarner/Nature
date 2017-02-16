@@ -20,7 +20,10 @@ local NatureEngine = {
   ,camera_target = nil
   
   ,properties = {
-      background_image = "sunrise_back.png"
+      water_level = 1700
+      ,background_image = "sunrise_back.png"
+      ,background_image2 = "sunrise_ground1_2.png"
+      ,background_image3 = "sunrise_ground1_3.png"
     }
   
   ,uid_max = 1
@@ -46,6 +49,21 @@ function NatureEngine:create(assetpack, camera_dimensions)
   NatureEngine.camera_mini = gamera.new(camera_dimensions[1], camera_dimensions[2], camera_dimensions[3], camera_dimensions[4])
   NatureEngine.camera_mini:setPosition(0, 0)
   --NatureEngine.camera_mini:setScale(0.001) 
+  
+  -- Draw base background layer for parallax effect.
+  if NatureEngine.properties.image_background_base == nil then
+    NatureEngine.properties.image_background_base = NatureEngine:loadPrefabImage(NatureEngine.properties.background_image)
+  end
+  
+  -- Draw middle background layer for parallax effect.
+  if NatureEngine.properties.image_background_middle == nil then
+    NatureEngine.properties.image_background_middle = NatureEngine:loadPrefabImage(NatureEngine.properties.background_image2)
+  end
+  
+  -- Draw near background layer for parallax effect.
+  if NatureEngine.properties.image_background_near == nil then
+    NatureEngine.properties.image_background_near = NatureEngine:loadPrefabImage(NatureEngine.properties.background_image3)
+  end
   
   initialized = true
 end
@@ -108,21 +126,37 @@ function NatureEngine:refreshCameraTarget()
 end
 
 function NatureEngine:draw()
+  local wl = engine.properties.water_level
+  local l, t, w, h = engine.camera:getVisible()
+  local oy = wl - t + 8
+  
+  local scale_l2 = 0.5
+  local scale_l3 = 0.75
   
   -- Draw base background layer for parallax effect.
   if engine.properties.image_background_base ~= nil then
     love.graphics.draw(engine.properties.image_background_base, 0, 0)
   end
   
+  -- Draw middle background layer for parallax effect.
+  if engine.properties.image_background_middle ~= nil then
+    love.graphics.draw(engine.properties.image_background_middle, 0, oy * scale_l2)
+  end
+  
+  -- Draw near background layer for parallax effect.
+  if engine.properties.image_background_near ~= nil then
+    love.graphics.draw(engine.properties.image_background_near, 0, oy * scale_l3)
+  end
+  
   NatureEngine.camera:draw(function (left,t,w,h)
   
-    NatureEngine:renderLayers()
+    NatureEngine:renderLayers(false)
     
   end)
   
 end
 
-function NatureEngine:renderLayers()
+function NatureEngine:renderLayers(debug)
   
     for l=1, #NatureEngine.layers do
       
@@ -133,7 +167,7 @@ function NatureEngine:renderLayers()
         local aw = as.asset_properties.animation_w / 2
         local ah = as.asset_properties.animation_h / 2
         love.graphics.draw(as.image, sl.body:getX(), sl.body:getY(), sl.body:getAngle())
-        love.graphics.line(sl.body:getWorldPoints(sl.shape:getPoints()))
+        if debug then love.graphics.line(sl.body:getWorldPoints(sl.shape:getPoints())) end
       end
       
       -- Render Entities
