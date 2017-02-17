@@ -1,6 +1,7 @@
 -- Toggle for window objects that aren't always on.
 
 wndLevelProps = false
+wndNewLevel = false
 level_menu_active = false
 
 -- Modules
@@ -91,6 +92,10 @@ function love.draw()
   ui:drawMenuSystem()
   if wndLevelProps then
     ui:drawLevelProperties(200, 200)
+  end
+  
+  if wndNewLevel then
+    ui:drawNewLevel(200, 200)
   end
 
   suit:draw()

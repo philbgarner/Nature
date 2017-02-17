@@ -13,6 +13,12 @@ local NatureEngine = {
   }
   ,player = nil
   ,world = nil
+  
+  ,width = 0
+  ,height = 0
+  
+  ,name = "Level1"
+  
   ,assetlist = {}
   ,assetCount = 0
   ,assetpack = ""

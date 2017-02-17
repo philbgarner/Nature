@@ -97,10 +97,69 @@ function ui:executeMenuCode(value)
       engine.properties.background_image3 = {text = engine.properties.background_image3}
     end
     wndLevelProps = true
+  elseif value == "New Level" then
+    engine.width = {text="5000"}
+    engine.height = {text="2000"}
+    engine.assetpack = {text="mockup1"}
+    engine.name = {text="Level1"}
+    wndNewLevel = true
   end
   
 end
 
+  
+function ui:drawNewLevel(x, y)
+  
+  local w = 450
+  local h = 350
+  
+  love.graphics.setColor(23, 23, 73, 220)
+  love.graphics.rectangle("fill", x, y, w, h, 6, 6)
+  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.rectangle("line", x, y, w, h, 6, 6)
+  
+  suit.layout:reset(x + 5, y + 5, 5, 5)
+  
+  state = suit.Label("-= New Level =-", {align = "left"}, suit.layout:row(w, 30))
+  
+  suit.layout:reset(x + 5, y + 30, 5, 5)
+  state = suit.Label("Name:", {align = "left"}, suit.layout:row(100, 30))
+  state = suit.Label("Width:", {align = "left"}, suit.layout:row(100, 30))
+  state = suit.Label("Height:", {align = "left"}, suit.layout:row(100, 30))
+  state = suit.Label("Assetpack:", {align = "left"}, suit.layout:row(100, 30))
+
+  if suit.Input(engine.name, x + 105, y + 30, 195, 30).submitted then
+  end
+
+  if suit.Input(engine.width, x + 105, y + 60, 195, 30).submitted then
+  end
+  
+  if suit.Input(engine.height, x + 105, y + 90, 195, 30).submitted then
+  end
+
+  if suit.Input(engine.assetpack, x + 105, y + 120, 195, 30).submitted then
+  end
+
+  
+  if suit.Button("OK", {color = ui.clr_normal, align="left"},suit.layout:row(200, 30)).hit
+  then
+    engine:create(engine.assetpack.text, {0, 0, tonumber(engine.width.text), tonumber(engine.width.text)})
+    
+    engine.assetpack = engine.assetpack.text
+    engine.width = tonumber(engine.width.text)
+    engine.height = tonumber(engine.height.text)
+    engine.name = engine.name.text
+    
+    engine.camera_target = nil
+    
+    wndNewLevel = false
+  end
+  if suit.Button("Cancel", {color = ui.clr_normal, align="left"},suit.layout:col(200)).hit
+  then
+    wndNewLevel = false
+  end
+
+end
   
 function ui:drawObjects(layers)
   
