@@ -139,6 +139,9 @@ function NatureEngine:draw()
   local scale_l2 = 0.5
   local scale_l3 = 0.75
   
+  local scale_l2_x = 0.066
+  local scale_l3_x = 0.28
+  
   -- Draw base background layer for parallax effect.
   if engine.properties.image_background_base ~= nil then
     love.graphics.draw(engine.properties.image_background_base, 0, 0)
@@ -146,12 +149,12 @@ function NatureEngine:draw()
   
   -- Draw middle background layer for parallax effect.
   if engine.properties.image_background_middle ~= nil then
-    love.graphics.draw(engine.properties.image_background_middle, 0, oy * scale_l2)
+    love.graphics.draw(engine.properties.image_background_middle, -l * scale_l2_x, oy * scale_l2)
   end
   
   -- Draw near background layer for parallax effect.
   if engine.properties.image_background_near ~= nil then
-    love.graphics.draw(engine.properties.image_background_near, 0, oy * scale_l3)
+    love.graphics.draw(engine.properties.image_background_near, -l * scale_l3_x, oy * scale_l3)
   end
   
   NatureEngine.camera:draw(function (left,t,w,h)
