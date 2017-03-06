@@ -3,6 +3,7 @@
 wndLevelProps = false
 wndNewLevel = false
 level_menu_active = false
+minimap_active = true
 
 -- Modules
 anim8 = require "anim8"
@@ -154,7 +155,7 @@ function love.draw()
     return
   end
 
-  if paused then ui:drawMinimap() end
+  if minimap_active then ui:drawMinimap() end
   
   ui:drawMenuSystem()
   if wndLevelProps then
@@ -233,6 +234,10 @@ function love.keypressed(key, scancode)
       if not paused then engine.camera_target = player_con end
     elseif key == '`' then
       console_active = true
+    end
+
+    if not paused and not console_active then
+      engine:keypress(key, scancode)
     end
 end
 

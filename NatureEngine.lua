@@ -44,6 +44,12 @@ function uid()
   return v
 end
 
+function NatureEngine:keypress(key, scancode)
+
+  player_con:keypress(key, scancode)
+
+end
+
 function NatureEngine:create(assetpack, camera_dimensions)
   NatureEngine.assetpack = assetpack
   NatureEngine:loadAssets()
