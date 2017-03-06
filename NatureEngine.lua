@@ -54,6 +54,9 @@ function NatureEngine:create(assetpack, camera_dimensions)
   NatureEngine.camera = gamera.new(camera_dimensions[1], camera_dimensions[2], camera_dimensions[3], camera_dimensions[4])
   NatureEngine.camera_mini = gamera.new(camera_dimensions[1], camera_dimensions[2], camera_dimensions[3], camera_dimensions[4])
   NatureEngine.camera_mini:setPosition(0, 0)
+
+  NatureEngine:createPlayer()
+
   --NatureEngine.camera_mini:setScale(0.001) 
   
   -- Draw base background layer for parallax effect.
@@ -160,6 +163,7 @@ function NatureEngine:draw()
   NatureEngine.camera:draw(function (left,t,w,h)
   
     NatureEngine:renderLayers(false)
+    player_con:draw()
     
   end)
   
@@ -250,11 +254,14 @@ function NatureEngine:createSolid(layer, prefab, x, y)
 
 end
 
-function NatureEngine:setPlayer(entity)
-  NatureEngine.player = entity
-  
-  NatureEngine.camera:setPosition(entity.body:getX(), entity.body:getY())
-  NatureEngine.camera_target = entity
+function NatureEngine:createPlayer()
+
+
+  NatureEngine.player = player_con:create(NatureEngine.world, 250, 250, 10, uid())
+  table.insert(NatureEngine.layers[2].entities, NatureEngine.player)
+
+  NatureEngine.camera:setPosition(NatureEngine.player.body:getX(), NatureEngine.player.body:getY())
+  NatureEngine.camera_target = NatureEngine.player
 end
 
 function NatureEngine:createEntity(layer, prefab, x, y, r)

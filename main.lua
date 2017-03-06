@@ -15,9 +15,10 @@ suit = require 'suit'
 
 -- Globals
 
+player_con = require "PlayerController"
 engine = require "NatureEngine"
 console = require "Console"
-console_active = true
+console_active = false
 require "prefabs_io"
 paused = true      -- When not paused, show UI.
 
@@ -199,6 +200,7 @@ function love.update(dt)
     ui:drawSelected(engine.camera_target)
   else
     engine:update(dt)
+    player_con:update(dt)
   end
 
 end
@@ -228,6 +230,7 @@ function love.keypressed(key, scancode)
     
     if scancode == "escape" then
       paused = not paused
+      if not paused then engine.camera_target = player_con end
     elseif key == '`' then
       console_active = true
     end
