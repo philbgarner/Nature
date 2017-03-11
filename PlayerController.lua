@@ -17,14 +17,14 @@ local PlayerController = {
 
   ,pitch_speed = 1
 
-  ,pitch_min = 65
-  ,pitch_max = 155
+  ,pitch_min = 60
+  ,pitch_max = 45
   
   ,bouyancy = 0.98
 
   ,vel = 5
-  ,vel_y = 0
-  ,flight_c = 0.1
+  ,vel_y = 1
+  ,flight_c = 0.25
 
   ,keys = {
 
@@ -63,27 +63,26 @@ function PlayerController:update(dt)
 	
 	--PlayerController.body:applyForce(0, PlayerController.body:getMass() * (-gy * PlayerController.bouyancy)) -- Nearly balances out the physics engine's gravity (makes player partially bouyant, essentially)
 
-	if PlayerController.angle < PlayerController.pitch_min then PlayerController.angle = PlayerController.pitch_min end
-	if PlayerController.angle > PlayerController.pitch_max then PlayerController.angle = PlayerController.pitch_max end
+	-- if PlayerController.angle < PlayerController.pitch_min then PlayerController.angle = PlayerController.pitch_min end
+	-- if PlayerController.angle > PlayerController.pitch_max then PlayerController.angle = PlayerController.pitch_max end
 
   -- Vy(2) = (Vy(1) - gdt - uf(dt)) + (Vy(1) + Ldt)
   -- Adjust C as desired
   -- C will let you determine how much Lift affects the flight path
   --  where L = C Vx cos(angle)
 
-  local uf = 9.82   -- uf = up force.  Currently just balances out gravity.
+  local uf = gy * PlayerController.body:getMass()  -- uf = up force.  Currently just balances out gravity.
   local vel_l = PlayerController.flight_c * PlayerController.vel_y * math.cos(math.rad(PlayerController.angle))
   local nvel_y = (PlayerController.vel_y - uf * dt) + (PlayerController.vel_y + vel_l * dt)
+  local nvel_x = (PlayerController.vel + (PlayerController.vel * math.sin(math.rad(PlayerController.angle))) * dt)
 
   PlayerController.vel_y = nvel_y
+  -- PlayerController.vel = nvel_x
 
-  local yamt = (math.cos(math.rad(PlayerController.angle)) * PlayerController.vel_y - vel_l * PlayerController.vel_y)
-  local xamt = (math.sin(math.rad(PlayerController.angle)) * PlayerController.vel)
-  PlayerController.body:applyLinearImpulse(xamt * dt, yamt)     -- Applies adjustment to player position based on
+  PlayerController.body:applyForce(nvel_x, nvel_y)     -- Applies adjustment to player position based on
                                    -- factors such as the glider's angle and velocity,
                                    -- whether or not it's inside an updraft zone, etc.
 
-  console:write(PlayerController.vel_y)
 
 end
 
